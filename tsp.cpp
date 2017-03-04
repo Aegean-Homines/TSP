@@ -63,13 +63,13 @@ void TSPSolver::read(char const * filename)
 
 }
 
-TSPSolver::TSPSolver(int totalCity) 
-	: totalCity(totalCity), 
-	bestCost(std::numeric_limits<int>::max()), 
+TSPSolver::TSPSolver(int totalCity)
+	: totalCity(totalCity),
+	bestCost(std::numeric_limits<int>::max()),
 	totalCostSoFar(0),
 	map(RecursionTreeRepresentation()),
 	currentPath(std::vector<int>()),
-	bestPath(std::vector<int>(totalCity+1)) {
+	bestPath(std::vector<int>(totalCity + 1)) {
 
 }
 
@@ -80,7 +80,7 @@ void TSPSolver::SolveTSPRecursively(int currentNodeIndex)
 	// Termination
 	if (currentNodeIndex == 0 && currentPath.size() == totalCity && bestCost > totalCostSoFar) {
 		bestCost = totalCostSoFar;
-		std::copy(currentPath.begin(), currentPath.end(), bestPath.begin()+1);
+		std::copy(currentPath.begin(), currentPath.end(), bestPath.begin() + 1);
 	}
 
 	CostToIndexMap::const_iterator iter;
@@ -131,8 +131,8 @@ void TSPSolver::CalculateLowerBound()
 				bestCost += iter->first;
 				break;
 			}
-			
-			if(0 == iter->second && currentPath.size() == totalCity) {
+
+			if (0 == iter->second && currentPath.size() == totalCity) {
 				index = 0;
 				bestCost += iter->first;
 				break;
