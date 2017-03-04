@@ -27,7 +27,6 @@ private:
 	int totalCostSoFar;
 
 	RecursionTreeRepresentation map;
-	IndexSet visitedNodes;
 	std::vector<int> currentPath;
 	std::vector<int> bestPath;
 };
