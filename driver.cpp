@@ -4,6 +4,7 @@
 #include <limits>  // numeric_limits
 #include <numeric> // accumulate
 #include <fstream> // ifstream
+#include <unordered_set>
 
 void read( char const* filename, MAP& map, int& TotalCity )
 {
@@ -58,6 +59,10 @@ void run( char const * filename ) {
     int prev = 0;
     int total = 0;
 
+	/*for (int i = 0; i < num_cities; ++i) {
+		std::cout << sol[i] << " " << std::endl;
+	}*/
+
     for( int i=1; i<num_cities+1; ++i ) {
         total += map[prev][sol[i]];
         prev=sol[i];
@@ -81,10 +86,24 @@ void test8() { run( "map8" ); }
 void test9() { run( "map9" ); }
 void test10() { run( "map10" ); }
 void test11() { run( "map11" ); }
+void test12() {
+	
+	std::unordered_set<int> mySet;
+	mySet.insert(1);
+	mySet.insert(2);
+	mySet.insert(10);
+
+	std::unordered_set<int>::iterator iter = mySet.begin();
+
+	while (iter != mySet.end()) {
+		std::cout << *iter << std::endl;
+		++iter;
+	}
+}
 
 void (*pTests[])() = { 
     test0,test1,test2,test3,test4,test5,
-    test6,test7,test8,test9,test10,test11
+    test6,test7,test8,test9,test10,test11, test12
 }; 
 
 #include <cstdio> // sscanf

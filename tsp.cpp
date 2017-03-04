@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 #include <limits>  // numeric_limits
+#include <chrono>
 
 std::vector<int> SolveTSP(char const * filename)
 {
@@ -10,6 +11,19 @@ std::vector<int> SolveTSP(char const * filename)
 	solver.read(filename);
 	solver.CalculateLowerBound();
 	solver.SolveTSPRecursively(0);
+
+#ifdef _DEBUG
+	auto begin = std::chrono::system_clock::now();
+	solver.CalculateLowerBound();
+	auto end = std::chrono::system_clock::now();
+	auto dif = end - begin;
+	std::cout << "Calculate Lower Bound: " << dif.count() << std::endl;
+	begin = std::chrono::system_clock::now();
+	solver.SolveTSPRecursively(0);
+	end = std::chrono::system_clock::now();
+	dif = end - begin;
+	std::cout << "SolveTSP: " << dif.count() << std::endl;
+#endif // _DEBUG
 
 	return solver.Tour();
 }
@@ -41,19 +55,40 @@ void TSPSolver::read(char const * filename)
 		}
 	}
 
+	in.close();
+
 }
 
 TSPSolver::TSPSolver(int totalCity) 
-	: totalCity(totalCity), bestCost(std::numeric_limits<int>::max()), totalCostSoFar(0) {
-	
-	// +1 for storing the first node twice
-	bestPath.resize(totalCity+1);
-}
+	: totalCity(totalCity), 
+	bestCost(std::numeric_limits<int>::max()), 
+	totalCostSoFar(0),
+	map(RecursionTreeRepresentation()),
+	visitedNodes(IndexSet()),
+	currentPath(std::vector<int>()),
+	bestPath(std::vector<int>(totalCity+1)){ }
 
 void TSPSolver::SolveTSPRecursively(int currentNodeIndex)
 {
 	visitedNodes.insert(currentNodeIndex);
 	CostToIndexMap const & children = map[currentNodeIndex];
+
+	// Base case
+	if (0 == currentNodeIndex && totalCity == visitedNodes.size()) {
+		if (bestCost > totalCostSoFar) {
+			bestCost = totalCostSoFar;
+			/*std::cout << "Visited nodes at best cost" << std::endl;
+			for(auto i: visitedNodes) {
+				std::cout << i << std::endl;
+			}
+			std::cout << "--------------------------" << std::endl;*/
+
+			// This is the best path -> take a snapshot
+			std::copy(visitedNodes.begin(), visitedNodes.end(), bestPath.begin());
+		}
+
+		return;
+	}
 
 	CostToIndexMap::const_iterator iter = children.begin();
 	CostToIndexMap::const_iterator end = children.end();
@@ -62,36 +97,17 @@ void TSPSolver::SolveTSPRecursively(int currentNodeIndex)
 		   // hence it's not this nodes child
 	while(iter != end) {
 
-		// If the child is the start node and if I visited all the nodes -> possible solution
-		// Base case
-		if(0 == iter->second && totalCity == visitedNodes.size()) {
-			if(bestCost > totalCostSoFar + iter->first) {
-				bestCost = totalCostSoFar + iter->first;
-				// This is the best path -> take a snapshot
-				std::copy(visitedNodes.begin(), visitedNodes.end(), bestPath.begin());
-			}else {
-				break;
-			}
-
-			return;
-		}
-
 		// Recursion part
 		// If this child is not visited before
-		if (visitedNodes.find(iter->second) == visitedNodes.end()) {
-			totalCostSoFar += iter->first;
+		if (visitedNodes.find(iter->second) == visitedNodes.end()
+			|| (0 == iter->second && totalCity == visitedNodes.size())) {
 			// Branch and bound
-			if (totalCostSoFar < bestCost) { 
+			if (totalCostSoFar + iter->first < bestCost) { 
+				totalCostSoFar += iter->first;
 				SolveTSPRecursively(iter->second);
 				totalCostSoFar -= iter->first;
 			}
-			else {
-				totalCostSoFar -= iter->first;
-				break;
-			}
-
 		}
-
 
 		++iter;
 	}
@@ -136,7 +152,7 @@ void TSPSolver::CalculateLowerBound()
 	visitedNodes.clear();
 }
 
-std::vector<int> const & TSPSolver::Tour()
+std::vector<int> const & TSPSolver::Tour() const
 {
 	return bestPath;
 }

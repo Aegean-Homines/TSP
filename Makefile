@@ -25,12 +25,15 @@ gcc0:
 	./$(PRG) $@ >studentout$@
 	@echo "lines after the next are mismatches with master output -- see out$@"
 	diff out$@ studentout$@ $(DIFFLAGS)
-9 10:
+9 10 11:
 	@echo "running test$@"
 	@echo "should run in less than 600 ms"
 	./$(PRG) $@ >studentout$@
 	@echo "lines after the next are mismatches with master output -- see out$@"
 	diff out$@ studentout$@ $(DIFFLAGS)
+12:
+	@echo "running test test"
+	./$(PRG) $@ >studentout$@
 mem6:
 	@echo "running memory test $@"
 	@echo "should run in less than 2000 ms"

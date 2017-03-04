@@ -19,7 +19,7 @@ public:
 	void SolveTSPRecursively(int currentNodeIndex);
 	void CalculateLowerBound();
 
-	std::vector<int> const & Tour();
+	std::vector<int> const & Tour() const;
 
 private:
 	unsigned int totalCity;
@@ -28,6 +28,7 @@ private:
 
 	RecursionTreeRepresentation map;
 	IndexSet visitedNodes;
+	std::vector<int> currentPath;
 	std::vector<int> bestPath;
 };
 #endif
