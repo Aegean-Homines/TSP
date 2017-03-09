@@ -14,10 +14,8 @@ std::vector<int> SolveTSP(char const* filename);
 
 class TSPSolver {
 public:
-	void read(char const* filename);
-	TSPSolver(int totalCity = 0);
+	TSPSolver(char const* filename);
 	void SolveTSPRecursively(int currentNodeIndex);
-	void CalculateLowerBound();
 
 	std::vector<int> const & Tour() const;
 
@@ -26,8 +24,14 @@ private:
 	int bestCost;
 	int totalCostSoFar;
 
+	MAP actualCostMap;
 	RecursionTreeRepresentation map;
 	std::vector<int> currentPath;
 	std::vector<int> bestPath;
+	std::vector<bool> isVisited;
+
+	int CalculateLowerBound();
+	void read(char const* filename);
+
 };
 #endif
