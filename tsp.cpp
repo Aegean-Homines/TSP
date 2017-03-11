@@ -32,33 +32,6 @@ std::vector<int> SolveTSP(char const * filename)
 	return bestPath;
 }
 
-/*
- * map.clear();
-    std::ifstream in( filename, std::ifstream::in );
-    if( !in.is_open() ) {
-        std::cout << "problem reading " << filename << std::endl;
-        return;
-    }
-    in >> TotalCity;
-    for( int i = 0; i < TotalCity; ++i ) {
-        std::vector<int> row;
-        for( int j = 0; j < TotalCity; ++j ) {
-            row.push_back( std::numeric_limits<int>::max() );
-        }
-        map.push_back( row );
-    }
-    for( int i = 0; i < TotalCity; ++i ) {
-        for( int j = i + 1; j < TotalCity; ++j ) {
-            if( !in.good() ) {
-                std::cout << "problem reading " << filename << std::endl;
-                return;
-            }
-            in >> map[i][j];
-            map[j][i] = map[i][j];
-        }
-    }
- */
-
 void TSPSolver::read(char const * filename)
 {
 	map.clear();

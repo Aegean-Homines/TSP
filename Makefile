@@ -41,3 +41,5 @@ mem6:
 	@echo "lines after this are memory errors"; cat difference$@
 clean:
 	rm -f *.exe *.o difference*
+	
+
