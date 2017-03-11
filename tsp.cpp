@@ -27,8 +27,9 @@ std::vector<int> SolveTSP(char const * filename)
 #else
 	solver.SolveTSPRecursively(0);
 #endif // _DEBUG
-
-	return solver.Tour();
+	std::vector<int> bestPath;
+	solver.GetBestPath(bestPath);
+	return bestPath;
 }
 
 /*
@@ -108,16 +109,16 @@ TSPSolver::TSPSolver(char const* filename)
 	totalCostSoFar(0),
 	actualCostMap(MAP()),
 	map(RecursionTreeRepresentation()),
-	currentPath(std::vector<int>()),
-	bestPath(std::vector<int>()),
+	currentPath(std::stack<int>()),
+	bestPath(std::stack<int>()),
 	isVisited(std::vector<bool>()){
 
 	read(filename);
-	bestPath.resize(totalCity+1);
+	//bestPath.resize(totalCity+1);
 	isVisited.resize(totalCity, false);
 
 	isVisited[0] = true;
-	currentPath.push_back(0);
+	currentPath.push(0);
 }
 
 void TSPSolver::SolveTSPRecursively(int currentNodeIndex)
@@ -127,10 +128,10 @@ void TSPSolver::SolveTSPRecursively(int currentNodeIndex)
 	if (currentPath.size() == totalCity) {
 		totalCostSoFar += actualCostMap[currentNodeIndex][0];
 		if(bestCost > totalCostSoFar) {
-			currentPath.push_back(0);
+			currentPath.push(0);
 			bestCost = totalCostSoFar;
 			bestPath = currentPath;
-			currentPath.pop_back();
+			currentPath.pop();
 		}
 		totalCostSoFar -= actualCostMap[currentNodeIndex][0];
 		return;
@@ -143,14 +144,14 @@ void TSPSolver::SolveTSPRecursively(int currentNodeIndex)
 	for (unsigned int i = 0; i < totalCity; ++i) {
 		if(!isVisited[i]) {
 			// Set
-			currentPath.push_back(i);
+			currentPath.push(i);
 			totalCostSoFar += actualCostMap[currentNodeIndex][i];
 			isVisited[i] = true;
 			// Calculate
 			int lowerBound = CalculateLowerBound();
 			orderedByLowerBound.insert(std::pair<int, int>(lowerBound, i));
 			// Reset
-			currentPath.pop_back();
+			currentPath.pop();
 			totalCostSoFar -= actualCostMap[currentNodeIndex][i];
 			isVisited[i] = false;
 		}
@@ -161,7 +162,7 @@ void TSPSolver::SolveTSPRecursively(int currentNodeIndex)
 
 	while (iter != end) {
 		
-		currentPath.push_back(iter->second);
+		currentPath.push(iter->second);
 		totalCostSoFar += actualCostMap[currentNodeIndex][iter->second];
 		isVisited[iter->second] = true;
 
@@ -169,7 +170,7 @@ void TSPSolver::SolveTSPRecursively(int currentNodeIndex)
 			SolveTSPRecursively(iter->second);
 		}
 
-		currentPath.pop_back();
+		currentPath.pop();
 		totalCostSoFar -= actualCostMap[currentNodeIndex][iter->second];
 		isVisited[iter->second] = false;
 
@@ -208,7 +209,20 @@ int TSPSolver::CalculateLowerBound()
 	return lowerBound;
 }
 
-std::vector<int> const & TSPSolver::Tour() const
+std::vector<int> TSPSolver::Tour()
 {
-	return bestPath;
+	std::vector<int> tour;
+	while(!bestPath.empty()) {
+		tour.push_back(bestPath.top());
+		bestPath.pop();
+	}
+	return tour;
+}
+
+void TSPSolver::GetBestPath(std::vector<int> & pathToFill)
+{
+	while (!bestPath.empty()) {
+		pathToFill.push_back(bestPath.top());
+		bestPath.pop();
+	}
 }

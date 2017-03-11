@@ -2,6 +2,7 @@
 #define TSP_H
 
 #include <vector>
+#include <stack>
 #include <unordered_set>
 #include <map>
 
@@ -17,8 +18,8 @@ public:
 	TSPSolver(char const* filename);
 	void SolveTSPRecursively(int currentNodeIndex);
 
-	std::vector<int> const & Tour() const;
-
+	std::vector<int> Tour() ;
+	void GetBestPath(std::vector<int> & pathToFill);
 private:
 	unsigned int totalCity;
 	int bestCost;
@@ -26,8 +27,8 @@ private:
 
 	MAP actualCostMap;
 	RecursionTreeRepresentation map;
-	std::vector<int> currentPath;
-	std::vector<int> bestPath;
+	std::stack<int> currentPath;
+	std::stack<int> bestPath;
 	std::vector<bool> isVisited;
 
 	int CalculateLowerBound();
